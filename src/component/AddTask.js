@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, {useState} from 'react';
 import { useSelector, useDispatch} from 'react-redux';
 import '../App.css';
@@ -11,7 +12,7 @@ const AddTask = () => {
         
     // }
 
-    const addTaskButtonHandler = () => {
+    const addTaskButtonHandler = async () => {
         /* invokes the addTask function with the 
         id as parameter when the add task button is clicked */
 
@@ -28,8 +29,18 @@ const AddTask = () => {
             alert(`No task entered!`);
             document.querySelector("input[type=text]").value = "";
         } else if (!included) {
-            dispatch({type: 'ADD_TO_LIST', payload: newTask});
-            setNewTask("");
+            await axios.post("https://backend-to-do-app.herokuapp.com/items", {name: newTask, status: "Pending"})
+            .then(
+                /* (res)=> {console.log(res)} */
+                await axios.get("https://backend-to-do-app.herokuapp.com/items").then((res)=> 
+                dispatch({type: 'GET_TASKS', payload: res.data}))
+                )
+
+            /* axios.get("http://localhost:8000/items").then((res)=> 
+            dispatch({type: 'GET_TASKS', payload: res.data})) */
+            
+            /* dispatch({type: 'ADD_TO_LIST', payload: newTask}); */
+            setNewTask("")
         } else {
             alert("Task already entered!")
         };     
